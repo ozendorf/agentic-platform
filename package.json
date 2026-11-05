@@ -1,0 +1,19 @@
+{
+  "name": "agentic-platform",
+  "private": true,
+  "packageManager": "pnpm@10.28.2",
+  "scripts": {
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d --wait",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "db:migrate": "cd workers && uv run migrate",
+    "db:seed": "cd workers && uv run seed",
+    "setup": "pnpm install && cd workers && uv sync && cd .. && pnpm infra:up && pnpm db:migrate && pnpm db:seed",
+    "dev": "concurrently -k -n web,worker -c magenta,cyan \"pnpm --dir apps/web dev\" \"cd workers && uv run worker\"",
+    "dev:web": "pnpm --dir apps/web dev",
+    "dev:worker": "cd workers && uv run worker",
+    "test": "cd workers && uv run pytest -q && cd ../apps/web && pnpm lint && npx tsc --noEmit"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.1"
+  }
+}
